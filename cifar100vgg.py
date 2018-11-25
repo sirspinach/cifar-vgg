@@ -1,4 +1,3 @@
-
 from __future__ import print_function
 import keras
 from keras.datasets import cifar100
@@ -23,6 +22,7 @@ class cifar100vgg:
             self.model = self.train(self.model)
         else:
             self.model.load_weights('cifar100vgg.h5')
+            print("loaded pretrained weights.")
 
 
     def build_model(self):
@@ -32,39 +32,46 @@ class cifar100vgg:
         weight_decay = self.weight_decay
 
         model.add(Conv2D(64, (3, 3), padding='same',
-                         input_shape=self.x_shape,kernel_regularizer=regularizers.l2(weight_decay)))
+                         input_shape=self.x_shape,
+                         kernel_regularizer=regularizers.l2(weight_decay)))
         model.add(Activation('relu'))
         model.add(BatchNormalization())
         model.add(Dropout(0.3))
 
-        model.add(Conv2D(64, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+        model.add(Conv2D(64, (3, 3), padding='same',
+            kernel_regularizer=regularizers.l2(weight_decay)))
         model.add(Activation('relu'))
         model.add(BatchNormalization())
 
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
-        model.add(Conv2D(128, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+        model.add(Conv2D(128, (3, 3), padding='same',
+            kernel_regularizer=regularizers.l2(weight_decay)))
         model.add(Activation('relu'))
         model.add(BatchNormalization())
         model.add(Dropout(0.4))
 
-        model.add(Conv2D(128, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+        model.add(Conv2D(128, (3, 3), padding='same',
+            kernel_regularizer=regularizers.l2(weight_decay)))
         model.add(Activation('relu'))
         model.add(BatchNormalization())
 
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
-        model.add(Conv2D(256, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+        model.add(Conv2D(256, (3, 3), padding='same',
+            kernel_regularizer=regularizers.l2(weight_decay)))
         model.add(Activation('relu'))
         model.add(BatchNormalization())
         model.add(Dropout(0.4))
 
-        model.add(Conv2D(256, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+        model.add(Conv2D(256, (3, 3), padding='same',
+            kernel_regularizer=regularizers.l2(weight_decay)))
         model.add(Activation('relu'))
         model.add(BatchNormalization())
         model.add(Dropout(0.4))
 
-        model.add(Conv2D(256, (3, 3), padding='same',kernel_regularizer=regularizers.l2(weight_decay)))
+        model.add(Conv2D(256, (3, 3), padding='same',
+            kernel_regularizer=regularizers.l2(weight_decay)))
         model.add(Activation('relu'))
         model.add(BatchNormalization())
 
@@ -199,23 +206,3 @@ class cifar100vgg:
                             validation_data=(x_test, y_test),callbacks=[reduce_lr],verbose=2)
         model.save_weights('cifar100vgg.h5')
         return model
-
-if __name__ == '__main__':
-    (x_train, y_train), (x_test, y_test) = cifar100.load_data()
-    x_train = x_train.astype('float32')
-    x_test = x_test.astype('float32')
-
-    y_train = keras.utils.to_categorical(y_train, 100)
-    y_test = keras.utils.to_categorical(y_test, 100)
-
-    model = cifar100vgg()
-
-    predicted_x = model.predict(x_test)
-    residuals = (np.argmax(predicted_x,1)!=np.argmax(y_test,1))
-    loss = sum(residuals)/len(residuals)
-    print("the validation 0/1 loss is: ",loss)
-
-
-
-
-

@@ -1,7 +1,7 @@
 
 from __future__ import print_function
 import keras
-from keras.datasets import cifar10
+from keras.datasets import cifar10, cifar100
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
@@ -22,7 +22,8 @@ class cifar10vgg:
         if train:
             self.model = self.train(self.model)
         else:
-            self.model.load_weights('cifar10vgg.h5')
+            self.model.load_weights('weights.h5')
+            print("loaded pretrained weights.")
 
 
     def build_model(self):
@@ -211,7 +212,7 @@ class cifar10vgg:
 if __name__ == '__main__':
 
 
-    (x_train, y_train_pre), (x_test, y_test_pre) = cifar10.load_data()
+    (x_train, y_train_pre), (x_test, y_test_pre) = cifar100.load_data()
     x_train = x_train.astype('float32')
     x_test = x_test.astype('float32')
 
@@ -224,12 +225,12 @@ if __name__ == '__main__':
             outputs=model.model.get_layer("flatten_1").output)
 
     import pickle
-    X = x_train[::10]
-    Y = y_train_pre[::10]
+    X = x_train
+    Y = y_train_pre
     X_processed = inter_model.predict(X)
     data = (X, X_processed, Y)
-    import pdb; pdb.set_trace()
-    pickle.dump(data, "cifar10processed.p")
+    with open("cifar10processed.p", "wb") as f:
+        pickle.dump(data, f)
 
     predicted_x = model.predict(x_test)
     residuals = np.argmax(predicted_x,1)!=np.argmax(y_test,1)
